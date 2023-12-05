@@ -38,14 +38,15 @@ use DataDome\FraudSdkSymfony\Models\StatusType;
 use DataDome\FraudSdkSymfony\Models\RegistrationEvent;
 use DataDome\FraudSdkSymfony\Models\Session;
 use DataDome\FraudSdkSymfony\Models\User;
+use DataDome\FraudSdkSymfony\Models\ResponseAction;
 ```
 
 Then proceed to create a private DataDome object as follows:
 
 ```php
-$key = $_ENV['DATADOME_FRAUD_API_KEY'] ?? self::DATADOME_FRAUD_API_KEY;
-$timeout = $_ENV['DATADOME_TIMEOUT'] ?? self::DATADOME_TIMEOUT;
-$endpoint = $_ENV['DATADOME_ENDPOINT'] ?? self::DATADOME_ENDPOINT;
+$key = $_ENV['DATADOME_FRAUD_API_KEY'];
+$timeout = $_ENV['DATADOME_TIMEOUT'];
+$endpoint = $_ENV['DATADOME_ENDPOINT'];
 
 $options = new DataDomeOptions($key, $timeout, $endpoint);
 $this->dataDome = new DataDome($options);
@@ -55,10 +56,10 @@ Finally, invoke the validate and collect methods as required:
 
 ```php
 if ($this->validateLogin("account_guid_to_check")) {
-    $loginEvent = new LoginEvent("account_guid_to_check", LoginStatus::Succeeded);
+    $loginEvent = new LoginEvent("account_guid_to_check", StatusType::Succeeded);
     $loginResponse = $this->dataDome->validate($request, $loginEvent);
 
-    if ($loginResponse != null && $loginResponse->action == ResponseAction::Allow) {
+    if ($loginResponse != null && $loginResponse->action == ResponseAction::Allow->jsonSerialize()) {
         // Valid login attempt
         return new JsonResponse([true]);
     } else {
@@ -71,7 +72,7 @@ if ($this->validateLogin("account_guid_to_check")) {
     }
 }
 else {
-    $loginEvent = new LoginEvent("account_guid_to_check", LoginStatus::Failed);
+    $loginEvent = new LoginEvent("account_guid_to_check", StatusType::Failed);
     $this->dataDome->collect($request, $loginEvent);
 }
 ```

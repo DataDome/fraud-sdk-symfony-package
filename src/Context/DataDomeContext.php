@@ -15,6 +15,7 @@ use DataDome\FraudSdkSymfony\Models\ResponseAction;
 use DataDome\FraudSdkSymfony\Models\ResponseStatus;
 use Exception;
 use ErrorException;
+use stdClass;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -77,10 +78,49 @@ class DataDomeContext
         return $this->processRequestDataDomeAPI($body, $url);
     }
 
+    private function recursive_filter_empty($data) {
+        if (is_array($data)) {
+            $filtered_data = [];
+
+            foreach ($data as $key => $value) {
+                $filtered_value = $this->recursive_filter_empty($value);
+
+                if ($filtered_value !== null && $filtered_value !== '') {
+                    $filtered_data[$key] = $filtered_value;
+                }
+            }
+
+            return $filtered_data == [] ? null : $filtered_data;
+        } elseif (is_object($data)) {
+            $filtered_data = new stdClass();
+
+            foreach ($data as $key => $value) {
+                $filtered_value = $this->recursive_filter_empty($value);
+
+                if ($filtered_value !== null && $filtered_value !== '') {
+                    $filtered_data->$key = $filtered_value;
+                }
+            }
+
+            return empty(get_object_vars($filtered_data)) ? null : $filtered_data;
+        }
+
+        return $data;
+    }
+
+    private function json_encode_ignore_empty($object): bool|string
+    {
+        // Recursively filter out null values and empty strings
+        $filtered_object = $this->recursive_filter_empty($object);
+
+        // Encode the filtered object to JSON
+        return json_encode($filtered_object, JSON_UNESCAPED_UNICODE);
+    }
+
     private function processRequestDataDomeAPI(LoginBody|RegistrationBody $body, string $url)
     {
         try {
-            $content = json_encode($body);
+            $content = $this->json_encode_ignore_empty($body);
 
             $endpoint = trim($this->dataDomeOptions->endpoint, "/");
             $endpointVersion = trim($this->dataDomeOptions->endpointVersion, "/");
