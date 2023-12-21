@@ -131,7 +131,9 @@ class DataDomeContext
             ]);
 
             $statusCode = $response->getStatusCode();
-            $responseBody = $response->getContent();
+            $responseBody = $response->getContent(false); // argument "false" here prevents exception to be thrown when response is in range 300-599
+            // https://symfony.com/doc/current/http_client.html#handling-exceptions
+
 
             if ($statusCode == 200) {
                 return json_decode($responseBody);
@@ -147,8 +149,13 @@ class DataDomeContext
                 if ($decodedJson == null) {
                     throw new Exception("Forcing a failure response.");
                 }
+                $result = new DataDomeResponseError();
+                $result->status = ResponseStatus::Failure;
+                $result->action = ResponseAction::Allow;
+                $result->message = $decodedJson->message;
+                $result->errors = $decodedJson->errors;
 
-                return $decodedJson;
+                return $result;
             }
         } catch (TransportExceptionInterface $e) {
             $result = new DataDomeResponseError();
