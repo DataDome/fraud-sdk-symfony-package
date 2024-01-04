@@ -18,6 +18,7 @@ class Address
      * @var string Country code, Format ISO-3166-1-alpha-2.
      */
     public string $countryCode = "";
+    public string $country = "";
     public string $regionCode = "";
     public string $zipCode = "";
 }

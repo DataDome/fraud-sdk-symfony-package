@@ -136,41 +136,20 @@ class DataDomeContext
 
 
             if ($statusCode == 200) {
-                return json_decode($responseBody);
-            } else if ($statusCode == 201) {
+                return new DataDomeResponse($responseBody);
+            } else if ($statusCode == 201) { // Collect - response is always OK - Allow
                 $result = new DataDomeResponse();
+                // default action is already "allow" - forcing OK only
                 $result->status = ResponseStatus::OK;
-                $result->reasons[] = $responseBody;
 
                 return $result;
             } else {
-                $decodedJson = json_decode($responseBody);
-
-                if ($decodedJson == null) {
-                    throw new Exception("Forcing a failure response.");
-                }
-                $result = new DataDomeResponseError();
-                $result->status = ResponseStatus::Failure;
-                $result->action = ResponseAction::Allow;
-                $result->message = $decodedJson->message;
-                $result->errors = $decodedJson->errors;
-
-                return $result;
+                return new DataDomeResponseError($responseBody, ResponseStatus::Failure);
             }
         } catch (TransportExceptionInterface $e) {
-            $result = new DataDomeResponseError();
-            $result->status = ResponseStatus::Timeout;
-            $result->action = ResponseAction::Allow;
-            $result->message = "Request timed out after " . $this->dataDomeOptions->timeout . " milliseconds";
-
-            return $result;
-        } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|Exception $e) {
-            $result = new DataDomeResponseError();
-            $result->status = ResponseStatus::Failure;
-            $result->action = ResponseAction::Allow;
-            $result->message = "Error in DataDome API response";
-
-            return $result;
+            return new DataDomeResponseError("", ResponseStatus::Timeout, "Request timed out after " . $this->dataDomeOptions->timeout . " milliseconds");
+        } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | Exception $e) {
+            return new DataDomeResponseError("", ResponseStatus::Failure, "Error in DataDome API response");
         }
     }
 }
