@@ -101,19 +101,19 @@ class Header
 
     public function __construct(Request $request)
     {
-        $this->headersList = implode(",", $request->headers?->keys() ?? []);
+        $this->headersList = implode(',', $request->headers?->keys() ?? []);
 
-        $this->accept = $request->headers?->get("Accept");
-        $this->acceptCharset = $request->headers?->get("Accept-Charset");
-        $this->acceptEncoding = $request->headers?->get("Accept-Encoding");
-        $this->acceptLanguage = $request->headers?->get("Accept-Language");
-        $this->xRealIp = $request->headers?->get("X-Real-IP");
-        $this->xForwardedForIp = $request->headers?->get("X-Forwarded-For");
-        $this->referer = $request->headers?->get("Referer");
-        $this->userAgent = $request->headers?->get("User-Agent");
-        $this->from = $request->headers?->get("From");
-        $this->origin = $request->headers?->get("Origin");
-        $this->connection = $request->headers?->get("Connection");
+        $this->accept = $request->headers?->get('Accept');
+        $this->acceptCharset = $request->headers?->get('Accept-Charset');
+        $this->acceptEncoding = $request->headers?->get('Accept-Encoding');
+        $this->acceptLanguage = $request->headers?->get('Accept-Language');
+        $this->xRealIp = $request->headers?->get('X-Real-IP');
+        $this->xForwardedForIp = $request->headers?->get('X-Forwarded-For');
+        $this->referer = $request->headers?->get('Referer');
+        $this->userAgent = $request->headers?->get('User-Agent');
+        $this->from = $request->headers?->get('From');
+        $this->origin = $request->headers?->get('Origin');
+        $this->connection = $request->headers?->get('Connection');
 
         $this->contentType = $request->getContentTypeFormat();
         $this->method = $request->getMethod();
@@ -122,10 +122,10 @@ class Header
         $this->protocol = $request->getProtocolVersion();
         $this->request = $request->getRequestUri();
         $this->host = $request->getHost();
-        $this->serverHostname = $_SERVER["SERVER_NAME"] ?? "";
+        $this->serverHostname = $_SERVER['SERVER_NAME'] ?? '';
 
-        $clientIdHeader = $request->headers?->get("x-datadome-clientid");
-        $dataDomeCookie = $request->cookies?->get("datadome");
+        $clientIdHeader = $request->headers?->get('x-datadome-clientid');
+        $dataDomeCookie = $request->cookies?->get('datadome');
         $this->clientId = $clientIdHeader ?? $dataDomeCookie;
 
         // Header truncation as required by DataDome: https://docs.datadome.co/reference/validate-request#size-limits-for-payload-fields
@@ -134,10 +134,9 @@ class Header
                 $maxLength = ApiLimits::GetLimit($propertyName);
 
                 if ((strlen($propertyValue) > $maxLength) && ($maxLength != -1)) {
-                    if ($propertyName == "xForwardedForIp") {
+                    if ($propertyName == 'xForwardedForIp') {
                         $this->$propertyName = substr($propertyValue, -$maxLength);
-                    }
-                    else {
+                    } else {
                         $this->$propertyName = substr($propertyValue, 0, $maxLength);
                     }
                 }

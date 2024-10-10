@@ -9,6 +9,8 @@ use DataDome\FraudSdkSymfony\Models\RegistrationEvent;
 use DataDome\FraudSdkSymfony\Models\Session;
 use DataDome\FraudSdkSymfony\Models\User;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 
 class RegistrationBodyTest extends TestCase
@@ -29,6 +31,8 @@ class RegistrationBodyTest extends TestCase
 
         // Create a mock Request object
         $requestMock = $this->createMock(Request::class);
+        $requestMock->headers = $this->createMock(HeaderBag::class);
+        $requestMock->cookies = new InputBag();
 
         // Create a RegistrationBody instance
         $registrationBody = new RegistrationBody($requestMock, $registrationEventMock);
