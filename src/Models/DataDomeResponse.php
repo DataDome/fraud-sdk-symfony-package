@@ -9,6 +9,8 @@ class DataDomeResponse
     public array $reasons;
     public string $ip;
     public Address $location;
+    public int $score;
+    public string $eventId;
 
     public function __construct(string $input = "")
     {
@@ -32,6 +34,8 @@ class DataDomeResponse
                 $this->location = $address;
             }
             $this->reasons = is_array($parsed_response->reasons) ? $parsed_response->reasons : [];
+            $this->eventId = $parsed_response->eventId ?? "";
+            $this->score = $parsed_response->score ?? 0;
         }
     }
 }

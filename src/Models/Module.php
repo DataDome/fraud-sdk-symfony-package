@@ -33,7 +33,7 @@ class Module
             $this->version = $version;
         }
         else {
-            $this->version = "1.0.2";
+            $this->version = "1.1.0";
         }
     }
 }

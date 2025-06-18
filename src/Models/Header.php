@@ -97,7 +97,7 @@ class Header
     /**
      * @var string|null Custom client identifier.
      */
-    public ?string $clientId;
+    public ?string $clientID;
 
     public function __construct(Request $request)
     {
@@ -126,7 +126,7 @@ class Header
 
         $clientIdHeader = $request->headers?->get('x-datadome-clientid');
         $dataDomeCookie = $request->cookies?->get('datadome');
-        $this->clientId = $clientIdHeader ?? $dataDomeCookie;
+        $this->clientID = $clientIdHeader ?? $dataDomeCookie;
 
         // Header truncation as required by DataDome: https://docs.datadome.co/reference/validate-request#size-limits-for-payload-fields
         foreach ($this as $propertyName => $propertyValue) {

@@ -34,7 +34,7 @@ class HeaderTest extends TestCase
         $this->assertSame("/example", $header->request);
         $this->assertSame("localhost", $header->host);
         $this->assertSame("serverName", $header->serverHostname);
-        $this->isNull($header->clientId);
+        $this->isNull($header->clientID);
     }
     
     public function testHeaderTruncation()
